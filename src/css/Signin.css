@@ -1,0 +1,56 @@
+.Signin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 auto;
+  align-items: center;
+  width: 500px;
+}
+
+.Signin input {
+  width: 300px;
+  padding: 15px;
+  margin: 0 auto;
+  border: 1px solid rgb(220, 220, 220);
+  border-radius: 20px;
+}
+
+.Signin .namepart {
+  width: 350px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.Signin .namepart input {
+  width: 125px;
+  border: 1px solid rgb(220, 220, 220);
+  border-radius: 20px;
+}
+
+
+.Signin .idButton {
+  cursor: pointer;
+  width: 120px;
+  height: 35px;
+  margin: auto;
+  border: none;
+  background-color:  rgb(220, 220, 220);
+  color: black;
+  border-radius: 40px;
+}
+
+.Signin button{
+  cursor: pointer;
+  width: 120px;
+  height: 35px;
+  margin: auto;
+  margin-top: 20px;
+  border: none;
+  background-color: #2F3545;
+  color: white;
+  border-radius: 40px;
+}
+
+.Signin .error-msg {
+  color: red;
+}

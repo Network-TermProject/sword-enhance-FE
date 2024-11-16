@@ -1,0 +1,38 @@
+.New {
+  display: flex;
+  position: relative;
+  margin: 0 auto;
+  margin-top : 10px;
+  text-align: center;
+  align-items: center;
+  flex-direction: column;
+  height: 500px;
+}
+
+.New .info {
+  padding-top: 20px;
+}
+
+.New img{
+  width: 200px;
+  padding-top: 60px;
+}
+
+.New input {
+  margin-top: 30px;
+  width: 300px;
+  height: 40px;
+  outline: none;
+  border: none;
+  border-bottom: 3px solid lightgrey;
+}
+
+.New button {
+  cursor: pointer;
+  margin: auto;
+  width: 130px;
+  height: 40px;
+  border: none;
+  background-color: pink;
+  border-radius: 40px;
+}

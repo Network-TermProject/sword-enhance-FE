@@ -1,0 +1,33 @@
+.Login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin: 0 auto;
+  width: 500px;
+}
+
+.Login input {
+  width: 300px;
+  padding: 15px;
+  margin: 0 auto;
+  border: 1px solid rgb(220, 220, 220);
+  border-radius: 20px;
+}
+
+
+.Login button{
+  cursor: pointer;
+  width: 120px;
+  height: 35px;
+  margin: auto;
+  margin-top: 20px;
+  border: none;
+  background-color: #2F3545;
+  color: white;
+  border-radius: 40px;
+}
+
+.Login .error-msg {
+  color: red;
+}

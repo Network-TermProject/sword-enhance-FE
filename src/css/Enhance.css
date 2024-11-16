@@ -1,0 +1,59 @@
+.Enhance {
+  position: relative;
+  margin: 0 auto;
+  margin-top : 10px;
+  text-align: center;
+  height: 500px;
+  width: 900px;
+}
+
+.Enhance .menu-enhance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.Enhance .menu-prob {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.Enhance .menu-rank {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.Enhance .menu-item{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160px;
+}
+
+.Enhance img {
+  width: 50px;
+}
+
+.Enhance .info {
+  padding-top: 20px;
+}
+
+.Enhance .sword img{
+  width: 200px;
+  padding-top: 40px;
+}
+
+.Enhance button {
+  cursor: pointer;
+  margin: auto;
+  margin-top: 80px;
+  width: 130px;
+  height: 40px;
+  border: none;
+  background-color: pink;
+  border-radius: 40px;
+}

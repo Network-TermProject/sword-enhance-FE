@@ -1,0 +1,87 @@
+.Ranking {
+  position: relative;
+  margin: 0 auto;
+  text-align: center;
+  width: 900px;
+}
+
+.Ranking .login {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.Ranking .enhance {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+.topRank {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.topRank p {
+  font-size: 10px;
+}
+
+.topRank1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.topRank2, .topRank3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.Ranking .topRank img{
+  width: 100px;
+}
+
+.Ranking .enhance, .login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.Ranking .enhance img, .login img {
+  width: 50px;
+}
+
+.other {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.other p {
+  font-size: 10px;
+}
+
+.other .other-rank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Ranking .other img{
+  display: flex;
+  width: 90px;
+  justify-content: center;
+}
+
+.line {
+  border-top: 10px solid navy;
+  width: 120px;
+  margin-top: 5px;
+}
