@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { firebaseAuth, signInWithEmailAndPassword } from "../firebase";
+import axios from "axios";
 
 import "../css/Login.css"
 
@@ -19,11 +19,32 @@ const Login= () => {
         setTypingPassword(e.target.value);
     }
 
-    const login= async () =>{
+    const login = async () =>{
         try {
             setErrorMsg("");
-            const typedUserInfo = await signInWithEmailAndPassword(firebaseAuth, typingEmail, typingPassword);
-            console.log(typedUserInfo);
+            console.log(typingEmail);
+            console.log(typingPassword);
+
+            const response = await axios.post("http://localhost:8080/users/login", {
+                email: typingEmail,
+                pwd: typingPassword
+            });
+
+            if (response.data.code && response.data.code !== 200) {
+                console.error("Server responded with error: ", response.data);
+                switch (response.data.code) {
+                    case 404:
+                        setErrorMsg("존재하지 않는 아이디입니다.");
+                        break;
+                    default:
+                        setErrorMsg("서버에서 알 수 없는 오류가 발생했습니다.");
+                }
+                return;
+            }
+
+            console.log(response);
+            localStorage.setItem("access", response.data.data.accessToken);
+
             setTypingEmail("")
             setTypingPassword("")
             nav("/New");
