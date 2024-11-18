@@ -43,6 +43,7 @@ const Login= () => {
             }
 
             console.log(response);
+            localStorage.setItem("access", response.data.data.accessToken);
 
             setTypingEmail("")
             setTypingPassword("")
