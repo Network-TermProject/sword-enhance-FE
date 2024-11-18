@@ -1,18 +1,21 @@
 import "../css/Signin.css";
 
 import { useState, useContext } from "react";
-import { firebaseAuth, createUserWithEmailAndPassword } from "../firebase";
+
 import { LoginContext } from '../App';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 const Signin = () => {
   const { onCreateId, onCreatePassword, onCreateConfirmPassword } = useContext(LoginContext);
-
   const [errorMsg, setErrorMsg] = useState("");
   const [emailErrorMsg, setEmailErrorMsg] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [registerName, setRegisterName] = useState(""); // 이름 상태 추가
+  const [isChecked, setIsChecked] = useState(false);
   const nav = useNavigate();
 
   const onChangeEmail = (e) => {
@@ -25,12 +28,38 @@ const Signin = () => {
 
   const onChangeConfirmPassword = (e) => {
     setConfirmPassword(e.target.value);
-  }
+  };
+
+  const onChangeName = (e) => { // 이름 핸들러 추가
+    setRegisterName(e.target.value);
+  };
 
   const register = async () => {
     try {
       setErrorMsg("");
-      await createUserWithEmailAndPassword(firebaseAuth, registerEmail, registerPassword);
+      
+      const response = await axios.post("http://localhost:8080/users/register", {
+        email: registerEmail,
+        name: registerName,
+        pwd: registerPassword,
+        checkPwd: confirmPassword,
+        isChecked: isChecked
+      });
+
+      if (response.data.code && response.data.code !== 200) {
+        console.error("Server responded with error: ", response.data);
+        switch (response.data.code) {
+            case 404:
+                setErrorMsg("존재하지 않는 아이디입니다.");
+                break;
+            default:
+                setErrorMsg("서버에서 알 수 없는 오류가 발생했습니다.");
+        }
+        return;
+      }
+
+      // 이름을 포함한 데이터 저장 처리
+      console.log("회원가입 정보:", { email: registerEmail, password: registerPassword, name: registerName });
 
       onCreateId(registerEmail);
       onCreatePassword(registerPassword);
@@ -38,6 +67,7 @@ const Signin = () => {
 
       setRegisterEmail("");
       setRegisterPassword("");
+      setRegisterName(""); // 이름 상태 초기화
       alert('회원가입이 완료되었습니다.');
       nav("/login");
     } catch (err) {
@@ -62,27 +92,53 @@ const Signin = () => {
   };
 
   const onSubmit = async (e) => {
-    if(registerPassword === confirmPassword) {
+    if (registerPassword === confirmPassword) {
       await register();
-    }
-    else {
+    } else {
       setErrorMsg('비밀번호가 일치하지 않습니다');
     }
   };
 
   const onCheck = async () => {
     setEmailErrorMsg("");
+
     try {
-      await createUserWithEmailAndPassword(firebaseAuth, registerEmail, 'asjkdfhklsjdhfkjlash');
-      setEmailErrorMsg('사용 가능한 이메일입니다');
+      const response = await axios.get("http://localhost:8080/users/check-duplicate-id", {
+        params: { email: registerEmail },
+      });
+
+      if (response.data.code && response.data.code !== 200) {
+        console.error("Server responded with error: ", response.data);
+        switch (response.data.code) {
+            case 404:
+                setErrorMsg("존재하지 않는 아이디입니다.");
+                break;
+            default:
+                setErrorMsg("서버에서 알 수 없는 오류가 발생했습니다.");
+        }
+        return;
+      }
+
+      if(response.data.data) { 
+        setEmailErrorMsg('사용 가능한 이메일입니다');
+        setIsChecked(true);
+      } else {
+        setEmailErrorMsg('이미 가입되어 있는 계정입니다');
+        setIsChecked(false);
+      }
     } catch (err) {
       setEmailErrorMsg('이미 가입되어 있는 계정입니다');
     }
-  }
+  };
 
   return (
     <div className="Signin">
       <h1>회원가입</h1>
+      <input
+        value={registerName}
+        onChange={onChangeName}
+        placeholder={"이름을 입력해주세요"} // 이름 입력 필드
+      />
       <input
         value={registerEmail}
         onChange={onChangeEmail}
