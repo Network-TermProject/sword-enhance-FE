@@ -53,7 +53,7 @@ const Signin = () => {
                 setErrorMsg("존재하지 않는 아이디입니다.");
                 break;
             default:
-                setErrorMsg("서버에서 알 수 없는 오류가 발생했습니다.");
+                setErrorMsg(response.data.message);
         }
         return;
       }
