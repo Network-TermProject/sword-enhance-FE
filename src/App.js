@@ -8,6 +8,7 @@ import Signin from './pages/Signin';
 import Ranking from './pages/Ranking';
 import Enhance from './pages/Enhance';
 import New from './pages/New';
+import Chat from './pages/Chat';
 
 export const LoginContext = createContext();
 
@@ -36,6 +37,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Ranking/>}/>
+            <Route path="/users" element={<Chat/>}/>
             <Route path="/signin" element={<Signin />} />
             <Route path="/login" element={<Login />} />
             <Route path="/enhance" element={<Enhance />} />

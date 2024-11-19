@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 import "../css/Login.css";
 
@@ -10,6 +12,7 @@ const Login = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   const nav = useNavigate();
+  const [stompClient, setStompClient] = useState(null);
 
   const onChangeEmail = (e) => {
     setTypingEmail(e.target.value);
@@ -17,6 +20,28 @@ const Login = () => {
 
   const onChangePassword = (e) => {
     setTypingPassword(e.target.value);
+  };
+
+  const connectWebSocket = (username) => {
+    const socket = new SockJS("http://localhost:8080/ws"); // WebSocket 엔드포인트
+    const client = new Client({
+      webSocketFactory: () => socket,
+      debug: (str) => console.log(str),
+      onConnect: () => {
+        console.log("Connected to WebSocket");
+        // 로그인한 사용자를 동시 접속자로 서버에 등록
+        client.publish({
+          destination: "/app/register",
+          body: username,
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP error: ", frame.headers["message"]);
+      },
+    });
+
+    client.activate();
+    setStompClient(client);
   };
 
   const login = async () => {
@@ -43,15 +68,17 @@ const Login = () => {
         return;
       }
 
-    //   console.log(response);
-
       // Access Token 저장
-      localStorage.setItem("access", response.data.data.accessToken);
+      const accessToken = response.data.data.accessToken;
+      localStorage.setItem("access", accessToken);
+
+      // 동시 접속자 등록 (WebSocket 연결)
+      connectWebSocket(typingEmail);
 
       // GET 요청으로 items 확인
       const itemsResponse = await axios.get("http://localhost:8080/items", {
         headers: {
-          Authorization: `Bearer ${response.data.data.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
