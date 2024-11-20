@@ -9,6 +9,8 @@ const WebSocketChat = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
+  const [itemLevel, setItemLevel] = useState(0);
+  const [itemName, setItemName] = useState("");
   const [activeUsers, setActiveUsers] = useState([]);
 
   useEffect(() => {
@@ -30,10 +32,10 @@ const WebSocketChat = () => {
         });
 
         const userData = response.data.data;
-        console.log(response);
         if (userData && userData.name) {
           setUsername(userData.name); // 사용자 이름 설정
-          console.log(username);
+          setItemLevel(userData.item.level);
+          setItemName(userData.item.name);
         } else {
           console.error("Failed to fetch user name from /users response.");
         }
@@ -78,8 +80,16 @@ const WebSocketChat = () => {
     client.activate();
     setStompClient(client);
 
-    return () => client.deactivate();
-  }, [username]); // username이 변경될 때 WebSocket 연결
+    return () => {
+      if (client.connected) {
+        client.publish({
+          destination: "/app/unregister", // 연결 해제 시 서버에 알림
+          body: username,
+        });
+        client.deactivate();
+      }
+    };
+  }, [username]);
 
   const handleSendMessage = () => {
     if (!stompClient || !stompClient.connected) {
@@ -89,7 +99,7 @@ const WebSocketChat = () => {
 
     stompClient.publish({
       destination: "/app/chat",
-      body: `${username}: ${message}`,
+      body: `[Lv.${itemLevel} ${itemName}] ${username} : ${message}`,
     });
 
     setMessage("");

@@ -72,8 +72,16 @@ const Login = () => {
       const accessToken = response.data.data.accessToken;
       localStorage.setItem("access", accessToken);
 
+      const userResponse = await axios.get("http://localhost:8080/users", 
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+          },
+        }
+      );
+
       // 동시 접속자 등록 (WebSocket 연결)
-      connectWebSocket(typingEmail);
+      connectWebSocket(userResponse.data.data.name);
 
       // GET 요청으로 items 확인
       const itemsResponse = await axios.get("http://localhost:8080/items", {
