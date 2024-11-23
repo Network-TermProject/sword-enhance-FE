@@ -14,7 +14,6 @@ const WebSocketChat = () => {
   const [activeUsers, setActiveUsers] = useState([]);
 
   useEffect(() => {
-    // 로컬 스토리지에서 토큰 가져오기
     const accessToken = localStorage.getItem("access");
 
     if (!accessToken) {
@@ -22,7 +21,7 @@ const WebSocketChat = () => {
       return;
     }
 
-    // GET /users 요청으로 사용자 정보 가져오기
+    // 사용자 정보 가져오기
     const fetchUserData = async () => {
       try {
         const response = await axios.get("http://localhost:8080/users", {
@@ -33,7 +32,7 @@ const WebSocketChat = () => {
 
         const userData = response.data.data;
         if (userData && userData.name) {
-          setUsername(userData.name); // 사용자 이름 설정
+          setUsername(userData.name);
           setItemLevel(userData.item.level);
           setItemName(userData.item.name);
         } else {
@@ -45,8 +44,11 @@ const WebSocketChat = () => {
     };
 
     fetchUserData();
+  }, []);
 
-    // WebSocket 연결 설정
+  useEffect(() => {
+    if (!username || stompClient) return;
+
     const socket = new SockJS("http://localhost:8080/ws");
     const client = new Client({
       webSocketFactory: () => socket,
@@ -54,40 +56,64 @@ const WebSocketChat = () => {
       onConnect: () => {
         console.log("Connected to WebSocket");
 
-        // 메시지 수신
         client.subscribe("/topic/messages", (msg) => {
           setMessages((prevMessages) => [...prevMessages, msg.body]);
         });
 
-        // 동시 접속자 목록 수신
         client.subscribe("/topic/activeUsers", (msg) => {
           setActiveUsers(JSON.parse(msg.body));
         });
 
         // 사용자 이름을 서버에 등록
-        if (username) {
-          client.publish({
-            destination: "/app/register",
-            body: username,
-          });
-        }
+        client.publish({
+          destination: "/app/register",
+          body: username,
+        });
+
+        // 채팅방 입장 메시지 전송
+        client.publish({
+          destination: "/app/chat",
+          body: `${username}님이 채팅방에 입장하셨습니다.`,
+        });
       },
       onDisconnect: () => {
         console.log("Disconnected from WebSocket");
+        sendExitMessage();
       },
     });
+
+    const sendExitMessage = () => {
+      if (client.connected) {
+        client.publish({
+          destination: "/app/unregister",
+          body: username,
+        });
+        client.publish({
+          destination: "/app/chat",
+          body: `${username}님이 채팅방을 나가셨습니다.`,
+        });
+      }
+    };
 
     client.activate();
     setStompClient(client);
 
+    // 브라우저 닫힘 감지 및 unregister 처리
+    const handleBeforeUnload = () => {
+      sendExitMessage();
+      client.deactivate();
+    };
+
+    // 이벤트 리스너 등록
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
-      if (client.connected) {
-        client.publish({
-          destination: "/app/unregister", // 연결 해제 시 서버에 알림
-          body: username,
-        });
-        client.deactivate();
-      }
+      // 이벤트 리스너 제거
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+
+      // 클라이언트 비활성화 처리
+      sendExitMessage();
+      client.deactivate();
     };
   }, [username]);
 
